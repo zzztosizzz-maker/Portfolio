@@ -199,6 +199,7 @@ small{color:var(--sub)}
     save();
   }
 
+  function clearSug(){$("sug").innerHTML=""}
   function suggest(){
     var s=t.value,box=$("sug");box.innerHTML="";
     if(!s)return;
@@ -218,7 +219,7 @@ small{color:var(--sub)}
       var b=document.createElement("button");b.textContent=c.e.t;
       b.onclick=function(){
         t.value=s.slice(0,s.length-c.n)+c.e.t;
-        bump(c.e);render();t.focus();suggest();
+        bump(c.e);render();t.focus();clearSug();
       };
       box.appendChild(b);
     });
@@ -240,7 +241,7 @@ small{color:var(--sub)}
         if(tab==="h")toFront(D.h,i);else toFront(D[tab],i);
         save();
         if((tab==="p"||tab==="e")&&D.set.quick){speak(it.t);return}
-        t.value+=it.t;render();suggest();
+        t.value+=it.t;render();clearSug();
       };
       box.appendChild(b);
     });
