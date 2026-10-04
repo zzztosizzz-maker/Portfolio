@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ことばトーク</title>
+<style>
+:root{--bg:#eef3f6;--ink:#14202b;--sub:#5a6b78;--card:#fff;--line:#b7c7d1;--acc:#0b5f7a;--accink:#fff;--ctl:#33505f;--ctlink:#fff;--emg:#c4160c;--emgs:#f8dcd8;--emgsi:#8f1a12;--emgl:#e3aaa3;--danger:#b3261e;
+box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a21;--ink:#e8f0f5;--sub:#9fb2bf;--card:#18262f;--line:#3a5262;--acc:#5cc0df;--accink:#06222c;--ctl:#4a6a7b;--ctlink:#fff;--emg:#e5372c;--emgs:#4a2a2a;--emgsi:#ffb9b0;--emgl:#7a4040;--danger:#ff8a80}}
+:root[data-theme="dark"]{--bg:#101a21;--ink:#e8f0f5;--sub:#9fb2bf;--card:#18262f;--line:#3a5262;--acc:#5cc0df;--accink:#06222c;--ctl:#4a6a7b;--ctlink:#fff;--emg:#e5372c;--emgs:#4a2a2a;--emgsi:#ffb9b0;--emgl:#7a4040;--danger:#ff8a80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;font-size:17px;line-height:1.6}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 6px;border-bottom:2px solid var(--line)}
+.wrap{max-width:640px;margin:0 auto}
+main{max-width:640px;margin:0 auto;padding:10px 14px calc(env(safe-area-inset-bottom,0px) + 40px)}
+textarea{display:block;width:100%;height:84px;min-height:60px;font:inherit;font-size:21px;line-height:1.45;padding:10px 12px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);resize:vertical}
+textarea:focus,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button{font:inherit;cursor:pointer;border:0}
+/* 操作ボタン: 濃い色・角ばった形 */
+.ctl{background:var(--ctl);color:var(--ctlink);border-radius:8px;padding:8px 10px;min-height:42px;font-weight:700}
+.speak{background:var(--acc);color:var(--accink);font-size:24px;min-height:60px;flex:2;border-radius:10px;font-weight:700}
+.emg{position:relative;overflow:hidden;background:var(--emgs);color:var(--emgsi);border:2px solid var(--emgl);font-size:19px;min-height:60px;flex:1;border-radius:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.emg .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--emg);opacity:.35}
+.emg .lbl,.emg .sm{position:relative}
+.emg .sm{font-size:11px;font-weight:600}
+.chips .em{background:var(--emgs);border-color:var(--emgl)}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--ctl);color:var(--ctlink);padding:10px 18px;border-radius:999px;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s;font-weight:700}
+.toast.on{opacity:1}
+.help{margin-top:18px;background:var(--card);border-radius:12px;padding:10px 14px;font-size:15px;color:var(--sub)}
+.help b{color:var(--ink)}
+.help ul{margin:6px 0 0;padding-left:1.2em}
+.row{display:flex;gap:6px;margin-top:6px}
+.row .ctl{flex:1}
+.sug{display:flex;gap:6px;overflow-x:auto;margin-top:6px}
+.sug:empty{display:none}
+.sug button{white-space:nowrap;background:var(--card);color:var(--ink);border:2px dashed var(--acc);border-radius:999px;padding:6px 14px;min-height:40px;font-size:18px}
+.tabs{display:flex;gap:0;margin-top:6px;border:2px solid var(--ctl);border-radius:8px;overflow:hidden}
+.tabs button{flex:1;background:transparent;color:var(--ctl);padding:6px;min-height:38px;font-weight:700}
+.tabs button[aria-pressed="true"]{background:var(--ctl);color:var(--ctlink)}
+:root[data-theme="dark"] .tabs button:not([aria-pressed="true"]){color:var(--ink)}
+/* 登録した言葉: 白い丸ボタン・細い枠 */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:8px 16px;min-height:46px;font-size:19px}
+.chips button:active{background:var(--line)}
+.chips .del{border-color:var(--danger)}
+.chips .del::after{content:" ✕";color:var(--danger);font-weight:700}
+.add{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-top:18px}
+input[type=text]{font:inherit;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);min-width:0;width:100%}
+label.opt{display:flex;align-items:center;gap:8px;margin:8px 0}
+label.opt input[type=range]{flex:1}
+details{margin-top:18px;background:var(--card);border-radius:12px;padding:8px 14px}
+summary{cursor:pointer;min-height:36px;font-weight:700}
+#big{position:fixed;inset:0;background:var(--bg);color:var(--ink);display:none;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 14px);z-index:10}
+#big.on{display:flex}
+#big.emgmode{background:var(--emg);color:#fff}
+#bigtext{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;line-height:1.3;overflow:auto;word-break:break-all}
+small{color:var(--sub)}
+.notice{margin-top:14px;border:2px solid var(--emgl);background:var(--emgs);color:var(--emgsi);border-radius:12px;padding:10px 14px;font-size:14px}
+.notice ul{margin:6px 0 0;padding-left:1.2em}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap">
+  <textarea id="t" placeholder="ここに入力して「読み上げ」" aria-label="読み上げる文章"></textarea>
+  <div class="sug" id="sug" aria-label="入力候補"></div>
+  <div class="row">
+    <button class="emg" id="emg" aria-label="緊急ボタン"><span class="fill"></span><span class="lbl">緊急</span><span class="sm" id="emgsm">長押し</span></button>
+    <button class="speak" id="speak">読み上げ</button>
+  </div>
+  <div class="row">
+    <button class="ctl" id="stop">止める</button>
+    <button class="ctl" id="clear">消す</button>
+    <button class="ctl" id="show">大きく見せる</button>
+  </div>
+  <div class="tabs" role="group" aria-label="辞書の種類">
+    <button id="tabP" aria-pressed="true">定型文</button>
+    <button id="tabW" aria-pressed="false">単語</button>
+    <button id="tabE" aria-pressed="false">非常</button>
+    <button id="tabH" aria-pressed="false">履歴</button>
+  </div>
+</div></div>
+
+<main>
+  <div class="chips" id="list"></div>
+  <small id="hint" style="display:block;margin-top:10px">タップすると入力欄に追加され、その言葉が先頭に移動します。</small>
+
+  <div class="add" id="addbox">
+    <input type="text" id="at" placeholder="登録する文・単語" aria-label="登録する文や単語">
+    <input type="text" id="ay" placeholder="よみ(省略可)" aria-label="よみがな">
+    <button class="ctl" id="addb">登録</button>
+  </div>
+  <div class="row" style="margin-top:10px"><button class="ctl" id="fromText">いまの入力を登録</button><button class="ctl" id="editb">削除モード</button></div>
+
+  <details>
+    <summary>設定</summary>
+    <label class="opt"><input type="checkbox" id="hold"> 緊急ボタンは長押しで起動する(押し間違い防止)</label>
+    <label class="opt">長押しの長さ
+      <select id="holdms" style="flex:1;font:inherit;padding:8px"><option value="500">0.5秒</option><option value="1000">1秒</option><option value="1500">1.5秒</option><option value="2000">2秒</option></select></label>
+    <label class="opt" style="display:block">緊急ボタンの文章
+      <input type="text" id="emgtext" style="margin-top:6px"></label>
+    <label class="opt">声
+      <select id="voice" style="flex:1;font:inherit;padding:8px"></select></label>
+    <label class="opt">速さ <input type="range" id="rate" min="0.5" max="1.6" step="0.1" value="1"></label>
+    <label class="opt">高さ <input type="range" id="pitch" min="0.5" max="1.5" step="0.1" value="1"></label>
+    <label class="opt"><input type="checkbox" id="quick"> 定型文をタップしたらすぐ読み上げる</label>
+    <label class="opt"><input type="checkbox" id="autoclear"> 読み上げたあと入力欄を消す</label>
+  </details>
+
+  <div class="help"><b>操作のしかた</b>
+    <ul>
+      <li>文字を入力して「読み上げ」を押すと声が出ます。</li>
+      <li>「緊急」は<b>長押し</b>(初期設定は1秒)で起動します。画面が赤くなり、文章が大きく表示されて読み上げられます。設定で長押しをやめたり、文章を変えたりできます。</li>
+      <li>「定型文」「単語」「非常」は、タップで入力欄に追加されます。使った言葉は先頭に移動します。</li>
+      <li>「非常」は非常時に使う言葉です。設定で「すぐ読み上げる」をオンにすると、タップだけで声が出ます。</li>
+      <li>言葉の登録は下の入力欄から、削除は「削除モード」で行います。</li>
+    </ul>
+  </div>
+
+  <div class="notice" role="note"><b>ご利用にあたって</b>
+    <ul>
+      <li>このページは会話の補助ツールです。動作は保証しません。</li>
+      <li>端末の音量、マナーモード、ブラウザの種類によっては、声が出ないことがあります。</li>
+      <li>緊急のときは、119番や110番への通報、または周囲の人への助けの求めを優先してください。自治体によっては、文字で通報できる仕組みがあります。お住まいの地域の消防に確認しておくと安心です。</li>
+      <li>入力した内容や登録した言葉は、この端末のブラウザの中にだけ保存され、外部には送信されません。ブラウザのデータを消すと、登録した言葉も消えます。</li>
+      <li>他の人と共有しているスマホでは、緊急用の文章に住所や電話番号を入れないでください。</li>
+    </ul>
+  </div>
+  <p style="margin-top:14px"><a href="index.html" style="color:var(--acc);font-weight:700">← ことばトークの説明に戻る</a> / <a href="../../index.html" style="color:var(--acc);font-weight:700">サイトのホーム</a></p>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<div id="big" role="dialog" aria-label="大きな文字表示">
+  <div id="bigtext"></div>
+  <div class="row"><button class="speak" id="bigspeak" style="min-height:64px;flex:2">もう一度読み上げ</button><button class="ctl" id="bigclose" style="min-height:64px">閉じる</button></div>
+</div>
+
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var KEY="kotobatalk.v1";
+  var EMG="緊急です。助けてください。私は声が出せません。";
+  var defaults={
+    p:[{t:"はい"},{t:"いいえ"},{t:"ありがとうございます"},{t:"すみません"},{t:"お願いします"},{t:"少し待ってください"},{t:"声が出せないので、文字で伝えます"},{t:"もう一度お願いします"},{t:"ゆっくり話してください"},{t:"会計をお願いします"},{t:"トイレはどこですか"},{t:"助けてください"},{t:"救急車を呼んでください"}],
+    w:[{t:"お願いします",y:"おねがい"},{t:"ありがとう",y:"ありがとう"},{t:"こんにちは",y:"こんにちは"},{t:"すみません",y:"すみません"}],
+    e:[{t:"救急車を呼んでください"},{t:"助けてください"},{t:"火事です"},{t:"警察を呼んでください"},{t:"気分が悪いです"},{t:"痛いです"},{t:"病院に連れて行ってください"},{t:"逃げてください"},{t:"家族に連絡してください"}],
+    h:[],set:{rate:1,pitch:1,voice:"",quick:false,autoclear:false,emg:EMG,hold:true,holdms:1000}
+  };
+  var D;
+  try{D=JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){D=null}
+  if(!D||!D.p){D=JSON.parse(JSON.stringify(defaults))}
+  if(!D.set.emg)D.set.emg=EMG;
+  if(!D.e)D.e=JSON.parse(JSON.stringify(defaults.e));
+  if(D.set.hold===undefined){D.set.hold=true;D.set.holdms=1000}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+
+  var tab="p",edit=false,t=$("t"),bigCur="";
+  var synth=window.speechSynthesis;
+
+  function loadVoices(){
+    if(!synth)return;
+    var vs=synth.getVoices().filter(function(v){return /^ja/i.test(v.lang)});
+    var sel=$("voice");sel.innerHTML="";
+    var o=document.createElement("option");o.value="";o.textContent="自動(日本語)";sel.appendChild(o);
+    vs.forEach(function(v){var x=document.createElement("option");x.value=v.name;x.textContent=v.name;sel.appendChild(x)});
+    sel.value=D.set.voice||"";
+  }
+  if(synth){loadVoices();synth.onvoiceschanged=loadVoices}
+
+  function say(text){
+    if(!synth){alert("このブラウザは読み上げに対応していません");return}
+    synth.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.lang="ja-JP";u.rate=D.set.rate;u.pitch=D.set.pitch;
+    var name=D.set.voice;
+    if(name){var v=synth.getVoices().filter(function(v){return v.name===name})[0];if(v)u.voice=v}
+    synth.speak(u);
+  }
+  function speak(text){
+    text=(text||"").trim();
+    if(!text)return;
+    say(text);
+    D.h=[text].concat(D.h.filter(function(x){return x!==text})).slice(0,30);
+    save();render();
+  }
+
+  /* 先頭に移動 */
+  function toFront(arr,i){if(i>0){var x=arr.splice(i,1)[0];arr.unshift(x)}}
+  function bump(e){
+    [D.w,D.p,D.e].forEach(function(a){var i=a.indexOf(e);if(i>0)toFront(a,i)});
+    var j=D.h.indexOf(e.t);if(j>0)toFront(D.h,j);
+    save();
+  }
+
+  function suggest(){
+    var s=t.value,box=$("sug");box.innerHTML="";
+    if(!s)return;
+    var pool=D.w.concat(D.p,D.e,D.h.map(function(x){return {t:x}}));
+    var out=[],seen={};
+    pool.forEach(function(e){
+      if(seen[e.t])return;
+      var keys=[e.y,e.t].filter(Boolean),best=0;
+      keys.forEach(function(k){
+        for(var n=Math.min(k.length,s.length);n>=1;n--){
+          if(s.slice(-n)===k.slice(0,n)){if(n>best)best=n;break}
+        }
+      });
+      if(best>0&&s.slice(-e.t.length)!==e.t){seen[e.t]=1;out.push({e:e,n:best})}
+    });
+    out.sort(function(a,b){return b.n-a.n}).slice(0,8).forEach(function(c){
+      var b=document.createElement("button");b.textContent=c.e.t;
+      b.onclick=function(){
+        t.value=s.slice(0,s.length-c.n)+c.e.t;
+        bump(c.e);render();t.focus();suggest();
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function render(){
+    ["P","W","E","H"].forEach(function(k){$("tab"+k).setAttribute("aria-pressed",String(tab===k.toLowerCase()))});
+    var box=$("list");box.innerHTML="";
+    var items=tab==="h"?D.h.map(function(x){return {t:x}}):D[tab];
+    if(!items.length){box.innerHTML="<small>まだありません。下の欄から登録できます。</small>"}
+    items.forEach(function(it,i){
+      var b=document.createElement("button");b.textContent=it.t;
+      if(edit)b.className="del";else if(tab==="e")b.className="em";
+      b.onclick=function(){
+        if(edit){
+          if(tab==="h")D.h.splice(i,1);else D[tab].splice(i,1);
+          save();render();return;
+        }
+        if(tab==="h")toFront(D.h,i);else toFront(D[tab],i);
+        save();
+        if((tab==="p"||tab==="e")&&D.set.quick){speak(it.t);return}
+        t.value+=it.t;render();suggest();
+      };
+      box.appendChild(b);
+    });
+    $("addbox").style.display=tab==="h"?"none":"grid";
+    $("editb").textContent=edit?"削除モードをやめる":"削除モード";
+    $("hint").textContent=edit?"消したい言葉をタップしてください。":"タップすると入力欄に追加され、その言葉が先頭に移動します。";
+  }
+
+  function openBig(text,isEmg){
+    bigCur=text;
+    var el=$("bigtext");el.textContent=text;
+    var n=text.length;
+    el.style.fontSize=(n>40?6:n>16?9:12)+"vw";
+    $("big").className="on"+(isEmg?" emgmode":"");
+  }
+
+  $("speak").onclick=function(){var s=t.value;speak(s);if(D.set.autoclear){t.value="";suggest()}};
+  var emgB=$("emg"),fill=emgB.querySelector(".fill"),holdT=null,toastT=null;
+  function hint(m){var el=$("toast");el.textContent=m;el.className="toast on";clearTimeout(toastT);toastT=setTimeout(function(){el.className="toast"},1800)}
+  function fireEmg(){openBig(D.set.emg,true);say(D.set.emg)}
+  function resetFill(){fill.style.transition="none";fill.style.width="0"}
+  function holdStart(){
+    if(!D.set.hold||holdT)return;
+    fill.style.transition="width "+D.set.holdms+"ms linear";
+    void fill.offsetWidth;fill.style.width="100%";
+    holdT=setTimeout(function(){holdT=null;resetFill();fireEmg()},D.set.holdms);
+  }
+  function holdEnd(){
+    if(holdT){clearTimeout(holdT);holdT=null;resetFill();hint("緊急ボタンは長押しで起動します")}
+  }
+  emgB.addEventListener("pointerdown",holdStart);
+  ["pointerup","pointerleave","pointercancel"].forEach(function(n){emgB.addEventListener(n,holdEnd)});
+  emgB.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&!e.repeat){e.preventDefault();if(D.set.hold)holdStart();else fireEmg()}});
+  emgB.addEventListener("keyup",function(e){if(e.key==="Enter"||e.key===" ")holdEnd()});
+  emgB.addEventListener("click",function(){if(!D.set.hold)fireEmg()});
+  emgB.addEventListener("contextmenu",function(e){e.preventDefault()});
+  function updEmg(){$("emgsm").style.display=D.set.hold?"":"none"}
+  $("stop").onclick=function(){if(synth)synth.cancel()};
+  $("clear").onclick=function(){t.value="";suggest();t.focus()};
+  t.addEventListener("input",suggest);
+  $("tabP").onclick=function(){tab="p";render()};
+  $("tabW").onclick=function(){tab="w";render()};
+  $("tabE").onclick=function(){tab="e";render()};
+  $("tabH").onclick=function(){tab="h";render()};
+  $("editb").onclick=function(){edit=!edit;render()};
+  $("addb").onclick=function(){
+    var x=$("at").value.trim(),y=$("ay").value.trim();
+    if(!x)return;
+    var e={t:x};if(y)e.y=y;
+    D[tab].unshift(e);$("at").value="";$("ay").value="";save();render();
+  };
+  $("fromText").onclick=function(){
+    var x=t.value.trim();if(!x)return;
+    if(tab==="h")tab="p";
+    D[tab].unshift({t:x});save();render();
+  };
+  $("show").onclick=function(){if(t.value.trim())openBig(t.value,false)};
+  $("bigclose").onclick=function(){if(synth)synth.cancel();$("big").className=""};
+  $("bigspeak").onclick=function(){say(bigCur)};
+
+  $("voice").onchange=function(){D.set.voice=this.value;save()};
+  $("rate").oninput=function(){D.set.rate=+this.value;save()};
+  $("pitch").oninput=function(){D.set.pitch=+this.value;save()};
+  $("quick").onchange=function(){D.set.quick=this.checked;save()};
+  $("autoclear").onchange=function(){D.set.autoclear=this.checked;save()};
+  $("hold").onchange=function(){D.set.hold=this.checked;save();updEmg()};
+  $("holdms").onchange=function(){D.set.holdms=+this.value;save()};
+  $("emgtext").oninput=function(){D.set.emg=this.value.trim()||EMG;save()};
+  $("rate").value=D.set.rate;$("pitch").value=D.set.pitch;
+  $("quick").checked=D.set.quick;$("autoclear").checked=D.set.autoclear;
+  $("emgtext").value=D.set.emg;
+  $("hold").checked=D.set.hold;$("holdms").value=String(D.set.holdms);updEmg();
+
+  render();
+})();
+</script>
+</body>
+</html>
