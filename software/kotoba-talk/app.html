@@ -27,6 +27,8 @@ button{font:inherit;cursor:pointer;border:0}
 /* 操作ボタン: 濃い色・角ばった形 */
 .ctl{background:var(--ctl);color:var(--ctlink);border-radius:8px;padding:8px 10px;min-height:42px;font-weight:700}
 .speak{background:var(--acc);color:var(--accink);font-size:24px;min-height:60px;flex:2;border-radius:10px;font-weight:700}
+.tr{background:var(--ctl);color:var(--ctlink);min-height:60px;flex:1.1;border-radius:10px;font-weight:800;font-size:18px;line-height:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tr .sm{font-size:10px;font-weight:600}
 .emg{position:relative;overflow:hidden;background:var(--emgs);color:var(--emgsi);border:2px solid var(--emgl);font-size:19px;min-height:60px;flex:1;border-radius:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .emg .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--emg);opacity:.35}
 .emg .lbl,.emg .sm{position:relative}
@@ -73,6 +75,7 @@ small{color:var(--sub)}
   <div class="sug" id="sug" aria-label="入力候補"></div>
   <div class="row">
     <button class="emg" id="emg" aria-label="緊急ボタン"><span class="fill"></span><span class="lbl">緊急</span><span class="sm" id="emgsm">長押し</span></button>
+    <button class="tr" id="tr" aria-label="翻訳(Google翻訳を開く)"><span>翻訳</span><span class="sm">Google翻訳</span></button>
     <button class="speak" id="speak">読み上げ</button>
   </div>
   <div class="row">
@@ -119,6 +122,7 @@ small{color:var(--sub)}
       <li>文字を入力して「読み上げ」を押すと声が出ます。</li>
       <li>「緊急」は<b>長押し</b>(初期設定は1秒)で起動します。画面が赤くなり、文章が大きく表示されて読み上げられます。設定で長押しをやめたり、文章を変えたりできます。</li>
       <li>「定型文」「単語」「非常」は、タップで入力欄に追加されます。使った言葉は先頭に移動します。</li>
+      <li>「翻訳」を押すと、入力欄の文章がコピーされ、Google翻訳が開きます。翻訳欄に<b>貼り付ける</b>と、英語などに訳せます。訳した文は、Google翻訳のスピーカーのボタンで読み上げられます。</li>
       <li>「非常」は非常時に使う言葉です。設定で「すぐ読み上げる」をオンにすると、タップだけで声が出ます。</li>
       <li>言葉の登録は下の入力欄から、削除は「削除モード」で行います。</li>
     </ul>
@@ -129,7 +133,8 @@ small{color:var(--sub)}
       <li>このページは会話の補助ツールです。動作は保証しません。</li>
       <li>端末の音量、マナーモード、ブラウザの種類によっては、声が出ないことがあります。</li>
       <li>緊急のときは、119番や110番への通報、または周囲の人への助けの求めを優先してください。自治体によっては、文字で通報できる仕組みがあります。お住まいの地域の消防に確認しておくと安心です。</li>
-      <li>入力した内容や登録した言葉は、この端末のブラウザの中にだけ保存され、外部には送信されません。ブラウザのデータを消すと、登録した言葉も消えます。</li>
+      <li>入力した内容や登録した言葉は、この端末のブラウザの中に保存されます。「翻訳」を押したときだけ、入力欄の文章がクリップボードにコピーされ、Google翻訳が開きます。貼り付けた文章は、Googleのサービスに送られます。それ以外では、外部に送信されません。ブラウザのデータを消すと、登録した言葉も消えます。</li>
+      <li>翻訳は機械翻訳なので、間違うことがあります。大事な場面では、短い文で確認してください。</li>
       <li>他の人と共有しているスマホでは、緊急用の文章に住所や電話番号を入れないでください。</li>
     </ul>
   </div>
@@ -279,6 +284,23 @@ small{color:var(--sub)}
   emgB.addEventListener("click",function(){if(!D.set.hold)fireEmg()});
   emgB.addEventListener("contextmenu",function(e){e.preventDefault()});
   function updEmg(){$("emgsm").style.display=D.set.hold?"":"none"}
+  function copyText(x){
+    function old(){
+      try{var a=document.createElement("textarea");a.value=x;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();var ok=document.execCommand("copy");document.body.removeChild(a);return ok}catch(e){return false}
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(x).then(function(){hint("コピーしました。Google翻訳に貼り付けてください")},function(){
+        hint(old()?"コピーしました。Google翻訳に貼り付けてください":"コピーできませんでした。文章をコピーしてください")});
+    }else{
+      hint(old()?"コピーしました。Google翻訳に貼り付けてください":"コピーできませんでした。文章をコピーしてください");
+    }
+  }
+  $("tr").onclick=function(){
+    var x=t.value.trim();
+    if(!x){hint("入力欄が空です");return}
+    copyText(x);
+    window.open("https://translate.google.com/?sl=ja&tl=en&op=translate","_blank","noopener");
+  };
   $("stop").onclick=function(){if(synth)synth.cancel()};
   $("clear").onclick=function(){t.value="";suggest();t.focus()};
   t.addEventListener("input",suggest);
