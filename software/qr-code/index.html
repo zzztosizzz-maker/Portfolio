@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QRコード生成ツール | AIでつくった道具箱</title>
+<link rel="icon" href="../../assets/favicon.png" type="image/png">
+<link rel="stylesheet" href="../../assets/style.css"></head>
+<body data-page="software/qr-code">
+<div class="layout">
+<nav id="nav"></nav>
+<article>
+<h1>QRコード生成ツール</h1>
+<p class="lead">テキストやURLを入力するとその場でQRコードを生成し、PNG画像としてダウンロードできるツールです。処理はすべてブラウザ内で完結するため、入力した内容が外部サーバーに送信・保存されることはありません。</p>
+
+<table class="meta">
+<tr><th>作成日</th><td>2026年9月8日</td></tr>
+<tr><th>作成ツール</th><td>AI(Claude / Anthropic)</td></tr>
+<tr><th>作った人</th><td>プログラムの知識がない素人が、AIに依頼して作りました</td></tr>
+<tr><th>種類</th><td>ブラウザで動くWebアプリ(インストール不要)</td></tr>
+<tr><th>通信・保存</th><td>完全ブラウザ内完結(外部サーバーへの送信・保存なし / ページを閉じると消去)</td></tr>
+</table>
+<a class="btn" href="app.html">ツールを開く</a>
+
+<h2>どんなときに使えますか</h2>
+<ul>
+<li>パソコンで見ているWebサイトのURLをスマホですぐ開きたいとき</li>
+<li>案内チラシや掲示物、名刺などに載せるQRコード画像を作りたいとき</li>
+<li>外部の生成サービスに送信したくない機密情報・社内テキストを安全にQRコード化したいとき</li>
+</ul>
+
+<h2>主な特徴</h2>
+<div class="box">
+<h3>完全ブラウザ完結の安心設計</h3>
+<p>処理はすべてお使いのブラウザ内(JavaScript)で実行されます。入力したテキストやURLが外部サーバーへ送信・保存されることは一切ありません。ページを閉じれば入力内容も消去されます。</p>
+<h3>リアルタイム自動生成</h3>
+<p>テキストを入力すると自動でQRコードが即座にプレビュー表示されます。</p>
+<h3>ワンクリックでPNGダウンロード</h3>
+<p>生成されたQRコードは「PNGをダウンロード」ボタンを押すだけで画像ファイルとして保存できます。</p>
+<h3>サイズ・誤り訂正レベルのカスタマイズ</h3>
+<p>用途に合わせてサイズ（小180px〜特大400px）や、汚れに強い誤り訂正レベル（L〜H）を切り替えられます。</p>
+</div>
+
+<h2>使い方</h2>
+<ol>
+<li>「ツールを開く」ボタンからアプリ画面を開きます。</li>
+<li>「読み込むテキスト」欄に、QRコードにしたいURLやメッセージを入力します。</li>
+<li>右側のプレビュー画面にQRコードが表示されます。必要に応じてサイズや誤り訂正レベルを変更します。</li>
+<li>「PNGをダウンロード」ボタンを押すと、パソコンやスマホに画像が保存されます。</li>
+</ol>
+
+<h2>ご利用にあたって</h2>
+<div class="warn"><ul>
+<li>個人が作成したツールです。動作は保証しません。</li>
+<li>文字数が上限（目安：約2000文字）を超える場合や、内容によってはQRコードが生成できないことがあります。</li>
+<li>外部サーバーへの送信・保存は一切行われません。そのため、ページを再読み込みしたり閉じたりすると入力内容は消えます。</li>
+<li>このツールを利用して生じた損害やトラブルについて、制作者は責任を負いません。</li>
+</ul></div>
+
+<a class="btn" href="app.html">ツールを開く</a>
+<footer id="sitefoot"></footer>
+</article>
+</div>
+<script src="../../assets/data.js"></script>
+<script src="../../assets/site.js" data-root="../../"></script>
+</body></html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>QRコード生成ツール | AIでつくった道具箱</title>
+<link rel="icon" href="../../assets/favicon.png" type="image/png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --bg:#eef3f6;
+    --surface:#ffffff;
+    --input-bg:#ffffff;
+    --ink:#14202b;
+    --sub:#5a6b78;
+    --line:#c4d2da;
+    --acc:#0b5f7a;
+    --acc-hover:#08495e;
+    --acc-dim:#9cb2bf;
+    --acc-ink:#ffffff;
+    --danger:#c4160c;
+    --danger-bg:#f8dcd8;
+    --danger-ink:#8f1a12;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#101a21;
+      --surface:#18262f;
+      --input-bg:#132029;
+      --ink:#e8f0f5;
+      --sub:#9fb2bf;
+      --line:#34495a;
+      --acc:#5cc0df;
+      --acc-hover:#4bb2d2;
+      --acc-dim:#355668;
+      --acc-ink:#06222c;
+      --danger:#ff8a80;
+      --danger-bg:#4a2a2a;
+      --danger-ink:#ffb9b0;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+    font-size:16px;
+    line-height:1.7;
+  }
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+    padding:36px 20px 80px;
+  }
+  .back-nav{
+    margin-bottom:16px;
+  }
+  .back-nav a{
+    color:var(--acc);
+    text-decoration:none;
+    font-size:14.5px;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    padding:4px 8px;
+    border-radius:6px;
+    transition:background .15s;
+  }
+  .back-nav a:hover{
+    background:rgba(0,0,0,0.05);
+  }
+  @media (prefers-color-scheme:dark){
+    .back-nav a:hover{background:rgba(255,255,255,0.08);}
+  }
+  .modules{
+    display:flex;
+    gap:5px;
+    margin-bottom:14px;
+  }
+  .modules span{
+    width:8px;height:8px;
+    border-radius:2px;
+    background:var(--acc);
+    opacity:0.25;
+  }
+  .modules span:nth-child(2){opacity:0.5;}
+  .modules span:nth-child(4){opacity:0.85;}
+  .modules span:nth-child(6){opacity:0.4;}
+  h1{
+    font-size:26px;
+    font-weight:800;
+    margin:0 0 8px;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+  .lede{
+    color:var(--sub);
+    font-size:15px;
+    margin:0 0 32px;
+    max-width:58ch;
+    line-height:1.6;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  @media (max-width:720px){
+    .grid{grid-template-columns:1fr;}
+  }
+  .panel{
+    background:var(--surface);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:24px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.02);
+  }
+  label{
+    display:block;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--sub);
+    margin-bottom:8px;
+  }
+  textarea{
+    width:100%;
+    min-height:150px;
+    resize:vertical;
+    font-family:inherit;
+    font-size:15px;
+    color:var(--ink);
+    background:var(--input-bg);
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:12px 14px;
+    line-height:1.6;
+  }
+  textarea:focus, select:focus{
+    outline:none;
+    border-color:var(--acc);
+    box-shadow:0 0 0 3px rgba(11,95,122,0.15);
+  }
+  @media (prefers-color-scheme:dark){
+    textarea:focus, select:focus{
+      box-shadow:0 0 0 3px rgba(92,192,223,0.25);
+    }
+  }
+  .count-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:8px;
+    font-size:12.5px;
+    color:var(--sub);
+  }
+  .count-row.over{color:var(--danger);}
+  .options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-top:20px;
+  }
+  select{
+    width:100%;
+    font-family:inherit;
+    font-size:14px;
+    color:var(--ink);
+    background:var(--input-bg);
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:9px 10px;
+  }
+  .error-msg{
+    display:none;
+    margin-top:10px;
+    background:var(--danger-bg);
+    color:var(--danger-ink);
+    font-size:13px;
+    padding:10px 14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+  }
+  .error-msg.show{display:block;}
+  .preview-panel{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  #qr-stage{
+    width:100%;
+    min-height:220px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:20px;
+  }
+  #qr-target img, #qr-target canvas{
+    border:1.5px solid var(--line);
+    padding:14px;
+    background:#ffffff;
+    border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.04);
+  }
+  .placeholder{
+    color:var(--sub);
+    font-size:14px;
+    border:2px dashed var(--line);
+    border-radius:10px;
+    padding:44px 20px;
+    width:100%;
+    background:rgba(0,0,0,0.01);
+  }
+  button{
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    color:var(--acc-ink);
+    background:var(--acc);
+    border:none;
+    border-radius:8px;
+    padding:12px 24px;
+    cursor:pointer;
+    transition:background .15s, opacity .15s;
+  }
+  button:hover:not(:disabled){
+    background:var(--acc-hover);
+  }
+  button:disabled{
+    background:var(--acc-dim);
+    color:rgba(255,255,255,0.7);
+    cursor:not-allowed;
+    opacity:0.75;
+  }
+  .privacy{
+    margin-top:36px;
+    padding:16px 20px;
+    background:var(--surface);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    font-size:13.5px;
+    color:var(--sub);
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+  }
+  .privacy .dot{
+    width:8px;height:8px;
+    margin-top:7px;
+    border-radius:50%;
+    background:var(--acc);
+    flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="back-nav"><a href="index.html">← 説明ページに戻る</a></div>
+
+  <div class="modules">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <h1>QRコード生成ツール</h1>
+  <p class="lede">テキストやURLを入力するとその場でQRコードに変換します。処理はすべてこのページの中(ブラウザ内)で完結します。</p>
+
+  <div class="grid">
+    <div class="panel">
+      <label for="text-input">読み込むテキスト</label>
+      <textarea id="text-input" placeholder="URLやメッセージを入力してください"></textarea>
+      <div class="count-row" id="count-row">
+        <span id="char-count">0 文字</span>
+        <span id="capacity-note">上限の目安: 約2000文字(内容により変動)</span>
+      </div>
+      <div class="error-msg" id="error-msg"></div>
+
+      <div class="options">
+        <div>
+          <label for="size-select">サイズ</label>
+          <select id="size-select">
+            <option value="180">小(180px)</option>
+            <option value="256" selected>標準(256px)</option>
+            <option value="320">大(320px)</option>
+            <option value="400">特大(400px)</option>
+          </select>
+        </div>
+        <div>
+          <label for="level-select">誤り訂正レベル</label>
+          <select id="level-select">
+            <option value="L">L(最大データ量)</option>
+            <option value="M" selected>M(標準)</option>
+            <option value="Q">Q(やや高耐性)</option>
+            <option value="H">H(高耐性・傷や汚れに強い)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel preview-panel">
+      <div id="qr-stage">
+        <div id="qr-target"></div>
+        <div class="placeholder" id="placeholder">テキストを入力するとここにQRコードが表示されます</div>
+      </div>
+      <button id="download-btn" disabled>PNGをダウンロード</button>
+    </div>
+  </div>
+
+  <div class="privacy">
+    <span class="dot"></span>
+    <span>入力したテキストはどこにも送信・保存されません。QRコードの生成はすべてお使いのブラウザ内の処理で完結し、ページを閉じると内容は残りません。</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var textInput = document.getElementById('text-input');
+  var sizeSelect = document.getElementById('size-select');
+  var levelSelect = document.getElementById('level-select');
+  var qrTarget = document.getElementById('qr-target');
+  var placeholder = document.getElementById('placeholder');
+  var downloadBtn = document.getElementById('download-btn');
+  var charCount = document.getElementById('char-count');
+  var countRow = document.getElementById('count-row');
+  var errorMsg = document.getElementById('error-msg');
+
+  var qrInstance = null;
+  var debounceTimer = null;
+  var MAX_LEN = 2000;
+
+  function levelMap(v){
+    return {
+      L: QRCode.CorrectLevel.L,
+      M: QRCode.CorrectLevel.M,
+      Q: QRCode.CorrectLevel.Q,
+      H: QRCode.CorrectLevel.H
+    }[v];
+  }
+
+  function showError(msg){
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+  }
+  function clearError(){
+    errorMsg.classList.remove('show');
+    errorMsg.textContent = '';
+  }
+
+  function render(){
+    var text = textInput.value;
+    charCount.textContent = text.length + ' 文字';
+    countRow.classList.toggle('over', text.length > MAX_LEN);
+
+    if(!text.trim()){
+      qrTarget.innerHTML = '';
+      placeholder.style.display = 'block';
+      downloadBtn.disabled = true;
+      clearError();
+      return;
+    }
+
+    if(text.length > MAX_LEN){
+      showError('文字数が多すぎます。' + MAX_LEN + '文字以内に収めてください。');
+      qrTarget.innerHTML = '';
+      placeholder.style.display = 'none';
+      downloadBtn.disabled = true;
+      return;
+    }
+
+    clearError();
+    placeholder.style.display = 'none';
+    qrTarget.innerHTML = '';
+
+    try{
+      var size = parseInt(sizeSelect.value, 10);
+      qrInstance = new QRCode(qrTarget, {
+        text: text,
+        width: size,
+        height: size,
+        colorDark: '#14202b',
+        colorLight: '#ffffff',
+        correctLevel: levelMap(levelSelect.value)
+      });
+      downloadBtn.disabled = false;
+    }catch(e){
+      showError('QRコードを生成できませんでした。入力内容を短くするか、誤り訂正レベルを下げてお試しください。');
+      downloadBtn.disabled = true;
+    }
+  }
+
+  function scheduleRender(){
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(render, 250);
+  }
+
+  textInput.addEventListener('input', scheduleRender);
+  sizeSelect.addEventListener('change', render);
+  levelSelect.addEventListener('change', render);
+
+  downloadBtn.addEventListener('click', function(){
+    var canvas = qrTarget.querySelector('canvas');
+    var img = qrTarget.querySelector('img');
+    var dataUrl = canvas ? canvas.toDataURL('image/png') : (img ? img.src : null);
+    if(!dataUrl) return;
+    var a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = 'qrcode.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+})();
+</script>
+</body>
+</html>

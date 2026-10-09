@@ -9,9 +9,14 @@ software/
   kotoba-talk/          ソフト1つにつきフォルダ1つ
     index.html            説明記事(作成日・作成ツール入り)
     app.html              アプリ本体
+  qr-code/              QRコード生成ツール
+    index.html            説明記事
+    app.html              アプリ本体
   soft-2/               ソフト名（空）
 articles/
   index.html            記事一覧
+  ai-memo.html          AI活用のメモ
+  windows-setup.html    Windows快適な設定
   article-1.html        記事1（空）
 ```
 

@@ -36,4 +36,27 @@
   }
   var f = document.getElementById("sitefoot");
   if (f) f.textContent = "このサイトのソフトや記事は、AI等を使って個人が作ったものです。動作や内容は保証しません。";
+
+  // トップページのアクセスカウンター
+  if (page === "home") {
+    var cEl = document.getElementById("site-counter");
+    var vEl = document.getElementById("counter-value");
+    if (cEl && vEl) {
+      var isLocal = location.protocol === "file:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+      var visited = sessionStorage.getItem("dogubako_visited");
+      var action = (isLocal || visited) ? "get" : "hit";
+      var url = "https://countapi.mileshilliard.com/api/v1/" + action + "/ai_dougubako_main_top";
+
+      fetch(url)
+        .then(function (res) { return res.ok ? res.json() : Promise.reject(); })
+        .then(function (data) {
+          if (data && typeof data.value === "number") {
+            if (!isLocal && !visited) sessionStorage.setItem("dogubako_visited", "1");
+            vEl.textContent = Number(data.value).toLocaleString();
+            cEl.style.display = "inline-flex";
+          }
+        })
+        .catch(function () {});
+    }
+  }
 })();

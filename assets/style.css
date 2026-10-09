@@ -31,4 +31,10 @@ p,li{margin:8px 0}
 .card.empty{border-style:dashed;opacity:.75}
 footer{margin-top:44px;font-size:13px;color:var(--sub);border-top:1px solid var(--line);padding-top:12px}
 a{color:var(--acc)}
+pre{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;font-family:Consolas,Menlo,Monaco,"Courier New",monospace;font-size:14.5px;line-height:1.55;margin:12px 0}
+code{font-family:Consolas,Menlo,Monaco,"Courier New",monospace;font-size:0.9em;background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:4px}
+@media (prefers-color-scheme:dark){code{background:rgba(255,255,255,0.1)}}
+pre code{background:transparent;padding:0}
+.counter-tag{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:var(--sub);background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:3px 14px;margin:6px 0 16px}
+.counter-tag .counter-num{font-weight:700;color:var(--acc);font-feature-settings:"tnum"}
 @media (max-width:720px){.layout{display:block}nav{width:auto;position:static;max-height:none;border-right:0;border-bottom:2px solid var(--line);padding:14px}nav .tag{display:none}nav .menu{display:flex;flex-wrap:wrap;gap:4px}nav a.m,nav a.m.sub{margin:0;padding:7px 12px;background:var(--card);border-left:0;border-radius:8px;font-size:15px}article{padding:20px 16px 50px}h1{font-size:24px}}

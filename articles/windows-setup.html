@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Windows快適な設定 | AIでつくった道具箱</title>
+<link rel="icon" href="../assets/favicon.png" type="image/png">
+<link rel="stylesheet" href="../assets/style.css"></head>
+<body data-page="articles/windows-setup">
+<div class="layout">
+<nav id="nav"></nav>
+<article>
+<h1>Windows快適な設定</h1>
+<p class="lead">作成したPythonプログラムを、コマンドプロンプトを開くことなくデスクトップからダブルクリック一発で安定起動し、専用アイコンやショートカットキーで快適に使うための設定メモです。</p>
+
+<table class="meta">
+<tr><th>作成日</th><td>2026年10月9日</td></tr>
+<tr><th>作成ツール</th><td>Windowsナレッジ</td></tr>
+<tr><th>主な対象</th><td>作成したPythonツールやスクリプトを手軽に日常使いしたい方</td></tr>
+</table>
+
+<h2>1. Pythonスクリプト起動用BATファイルの作成</h2>
+<p>Pythonプログラム（例：<code>音読くん_ver04.py</code>）を実行するたびにコマンドプロンプトを開いてコマンドを打ち込む手間を解消します。</p>
+
+<div class="warn">
+<h3>よくある起動トラブル</h3>
+<ul>
+<li><strong>パス迷子：</strong>ショートカット等から実行すると基準フォルダー（カレントディレクトリ）がズレて対象ファイルを見失う。</li>
+<li><strong>日本語の文字化け：</strong>ファイル名やパスに日本語が含まれているとエラーで止まる。</li>
+<li><strong>画面即落ち：</strong>エラー発生時に一瞬で黒い画面が閉じてしまい、原因が確認できない。</li>
+</ul>
+</div>
+
+<div class="box">
+<h3>標準起動バッチファイルのテンプレート</h3>
+<p>Pythonスクリプトと同じフォルダー内に、以下の内容で <code>run.bat</code>（名前は自由）をUTF-8形式で作成・配置します。</p>
+<pre><code>@echo off
+chcp 65001 > nul
+cd /d "%~dp0"
+
+python "音読くん_ver04.py"
+
+pause</code></pre>
+
+<h3>各行の役割と安定化のポイント</h3>
+<ul>
+<li><code>chcp 65001 > nul</code>：文字コードをUTF-8に設定。日本語ファイル名の文字化け・実行失敗を防ぎます。</li>
+<li><code>cd /d "%~dp0"</code>：どこからショートカットで呼び出されても、バッチファイル自身の配置場所を作業基準フォルダーに固定します。</li>
+<li><code>pause</code>：実行終了後やエラー発生時に画面を自動で閉じず一時停止させ、メッセージを確認できるようにします。</li>
+</ul>
+</div>
+
+<h2>2. お気に入りアイコン（.ico）の作成</h2>
+<p>デスクトップ上に配置したショートカットにアプリ専用のアイコンを適用すると、一目で分かりやすくなります。Windowsショートカットにはマルチサイズ対応の <code>.ico</code> 形式が必要です。</p>
+
+<div class="box">
+<h3>アイコン作成の2つの方法</h3>
+<ul>
+<li><strong>方法A（Web無料ツール）：</strong>「ICOコンバーター」サイト等を利用し、PNGやJPG画像をドラッグ＆ドロップで <code>.ico</code> に変換。</li>
+<li><strong>方法B（Pythonスクリプト）：</strong><code>Pillow</code> ライブラリを使って各解像度（16px〜256px）を含む高品質マルチサイズアイコンを一括生成：
+<pre><code>from PIL import Image
+
+img = Image.open("icon.png")
+sizes = [(256, 256), (128, 128), (64, 64), (48, 48), (32, 32), (16, 16)]
+img.save("app_icon.ico", format="ICO", sizes=sizes)</code></pre>
+</li>
+</ul>
+</div>
+
+<h2>3. ショートカットの適用とホットキー割り当て</h2>
+
+<div class="box">
+<h3>設定手順</h3>
+<ol>
+<li>バッチファイルを右クリックして「送る」➔「デスクトップ（ショートカットを作成）」を選びます。</li>
+<li>デスクトップにできたショートカットを右クリックし、「プロパティ」を開きます。</li>
+<li>「ショートカット」タブ ➔「アイコンの変更」➔「参照」から、作成した <code>.ico</code> ファイルを選択して適用します。</li>
+<li><strong>ショートカットキー（ホットキー）の割り当て：</strong><br>
+同じプロパティ画面内の「ショートカット キー」欄をクリックし、お好みのキー（例：<code>Ctrl</code> + <code>Alt</code> + <code>O</code>）を押してOKをクリックします。<br>
+以降はキーボードを押すだけで、いつでも一瞬でアプリが起動します。</li>
+</ol>
+</div>
+
+<footer id="sitefoot"></footer>
+</article>
+</div>
+<script src="../assets/data.js"></script>
+<script src="../assets/site.js" data-root="../"></script>
+</body></html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI活用のメモ | AIでつくった道具箱</title>
+<link rel="icon" href="../assets/favicon.png" type="image/png">
+<link rel="stylesheet" href="../assets/style.css"></head>
+<body data-page="articles/ai-memo">
+<div class="layout">
+<nav id="nav"></nav>
+<article>
+<h1>AI活用のメモ</h1>
+<p class="lead">AI（ClaudeやChatGPTなど）との対話やプログラミングをスムーズに進め、作業が長くなっても回答精度を高く維持するための実践的なメモ・工夫です。</p>
+
+<table class="meta">
+<tr><th>作成日</th><td>2026年10月9日</td></tr>
+<tr><th>作成ツール</th><td>AIナレッジ</td></tr>
+<tr><th>主な対象</th><td>AIと一緒にツールの作成や日常の作業を行う方</td></tr>
+</table>
+
+<h2>1. 長いやり取りで起こる問題</h2>
+<p>1つの会話（スレッド）で長くやり取りを続けていると、以下のような問題が発生しやすくなります。</p>
+
+<div class="warn">
+<h3>よくあるトラブル</h3>
+<ul>
+<li><strong>指示の見落とし・処理漏れ：</strong>会話ログが長くなるとAIの記憶枠（コンテキスト）が圧迫され、指定した指示の一部が抜け落ちる。</li>
+<li><strong>精度の低下・レスポンスの遅れ：</strong>過去の不要なやり取りを引きずってしまい、回答が的外れになったり返答の生成に時間がかかったりする。</li>
+</ul>
+</div>
+
+<h2>2. 対策①：適切なタイミングで「新しい会話」に引き継ぐ</h2>
+<p>作業がひと区切りついたら、同じ会話をだらだら続けず、AIに引き継ぎメモを作成させて新しい会話に切り替えるのが最も効果的です。</p>
+
+<div class="box">
+<h3>AIに出す引き継ぎプロンプト例</h3>
+<pre><code>別の会話に切り替えて続きを行います。
+新しい会話に貼り付けるための「現在の進捗、決定事項、次にやること」を簡潔にまとめてください。</code></pre>
+<p>出力された要約と対象ファイル名をコピーし、新しい会話の冒頭に貼り付けて作業を再開します。これにより、余分な過去ログのないクリーンで高速な状態から作業を継続できます。</p>
+</div>
+
+<h2>3. 対策②：指示の分割と「1ターン1作業」の原則</h2>
+<p>AIへの指示は、一度にたくさんの要望を詰め込みすぎないことが成功の秘訣です。</p>
+
+<div class="box">
+<h3>指示出しのコツ</h3>
+<ul>
+<li><strong>1ターン1作業（推奨）：</strong>「まずAの画面を直して」→「動作確認後、次にBの機能を追加して」と段階を踏むことで、見落としを確実に防げます。</li>
+<li><strong>番号付きリストで明示：</strong>どうしても複数の指示を一度に出す場合は、文章ではなく箇条書き（1, 2, 3...）で記述します。</li>
+<li><strong>完了確認の一言を添える：</strong>指示の末尾に「すべて完了したことを確認して報告してください」と添えると、AIが自己チェックを行うため抜け漏れが減ります。</li>
+</ul>
+</div>
+
+<footer id="sitefoot"></footer>
+</article>
+</div>
+<script src="../assets/data.js"></script>
+<script src="../assets/site.js" data-root="../"></script>
+</body></html>
